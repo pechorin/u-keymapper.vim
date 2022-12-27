@@ -1,14 +1,14 @@
-## U-KeyMapper — Universal key mapper for vim and neovim
+# U-KeyMapper — Universal key mapper for vim and neovim
 
 - Bind your **keybindings** to vim and nvim at the same time (with nvim additional features like keymap description)
 - Define **keygroups** for better configuration organization and integration with which-key.nvim
 - Export your custom keybindings to csv or table with vim-table-mode and share it with community friends
 
-### Before and after
+## Key mappings before and after
 
 Let's imagine what you like me use your nvim for local development and classic vim 8 or 9 for remote machines setup. So maybe you will have something like what in your `.vimrc`:
 
-```vim
+```viml
 let s:nvim  = has('nvim')
 
 if s:nvim
@@ -20,7 +20,7 @@ endif
 
 Now with U-KeyMapper all you have to do is:
 
-```vim
+```viml
 call u_keymapper#init()
 
 KeyMap nmap <silent> <leader>rf :TestFile<CR> "Run current test file"
@@ -28,11 +28,11 @@ KeyMap nmap <silent> <leader>rf :TestFile<CR> "Run current test file"
 
 This command will be parsed and executed in according api env (vim or nvim).
 
-### Keygroups
+## Keygroups
 
 Keygroups usable not only for csv/table export, but also for which-key.nvim integration.
 
-```vim
+```viml
 KeyMapGroup <leader>r "Tests runners"
    KeyMap nmap <silent> <leader>rf :TestFile<CR> "Test file"
    KeyMap nmap <silent> <leader>rd :TestFile -f d<CR> "Test file -f d"
@@ -42,11 +42,11 @@ KeyMapGroup <leader>r "Tests runners"
 KeyMapGroupEnd
 ```
 
-### Export examples
+## Export examples
 
-#### Table example with vim-table-mode
+### Table example with vim-table-mode
 
-with `:KeyMapExportToTable`
+Execute `:KeyMapExportToTable` command in buffer and you will get result like this:
 
 | mode  | key                   | command                           | description                                  | group                  |
 |-------|-----------------------|-----------------------------------|----------------------------------------------|------------------------|
@@ -94,7 +94,9 @@ with `:KeyMapExportToTable`
 | n     | `gY`                  | <CMD>Glance type_definitions<CR>  | Glance type definitions                      |                        |
 | n     | `gM`                  | <CMD>Glance implementations<CR>   | Glance implementations                       |                        |
 
-#### CSV example
+### CSV example
+
+Execute `:KeyMapExportToCSV` command in buffer and you will get result like this:
 
 ```csv
 mode; key; command; description; group
@@ -141,4 +143,108 @@ n; `gR`; <CMD>Glance references<CR>; Glance reference;
 n; `gD`; <CMD>Glance definitions<CR>; Glance definitions;
 n; `gY`; <CMD>Glance type_definitions<CR>; Glance type definitions;
 n; `gM`; <CMD>Glance implementations<CR>; Glance implementations;
+```
+
+### Full .vimrc mapping example
+
+This is my mapping from my [vim-files](https://github.com/pechorin/vim-files):
+
+```viml
+call u_keymapper#init()
+
+" remap ; to :
+nmap ; :
+
+" set leader key for custom commands
+let mapleader=","
+
+" https://github.com/r00k/dotfiles/blob/master/vimrc
+" Disable that goddamn 'Entering Ex mode. Type 'visual' to go to Normal mode.'
+" that I trigger 40x a day.
+nmap Q <Nop>
+
+" Disable K looking man stuff up
+nmap K <Nop>
+
+KeyMapGroup "Bash-like keys for cmd"
+  KeyMap cnoremap <C-A> <Home> "Bash-like CTRL+A for command line"
+  KeyMap cnoremap <C-E> <End>  "Bash-like CTRL+E for command line"
+  KeyMap cnoremap <C-K> <C-U>  "Bash-like CTRL+K for command line"
+KeyMapGroupEnd
+
+KeyMapGroup "Text manipulation"
+  KeyMap xmap ga <Plug>(EasyAlign) "Align in visual mode (e.g. `vipga`)"
+  KeyMap nmap ga <Plug>(EasyAlign) "Align for a motion/text object (e.g. `gaip`)"
+KeyMapGroupEnd
+
+KeyMapGroup "Navigation"
+  KeyMap nmap <leader>et :Tagbar<CR> "Tagbar"
+  KeyMap nmap <leader>n :NERDTree<CR> "NERDTree for project"
+  KeyMap nmap <leader>N :NERDTree %<CR> "NERDTree for current file"
+
+  " Neotree
+  KeyMap nmap <leader>m :Neotree<CR> "Neotree"
+  KeyMap nmap <leader>M :Neotree %<CR> "Neotree for current file"
+  KeyMap nmap <leader>, :Neotree buffers<CR> "Neotree buffers"
+  KeyMap nmap <leader>. :Neotree float git_status<CR> "Neotree git"
+
+  " Tabs
+  KeyMap nmap <leader>t :tabnew<CR> "Create new tab"
+  KeyMap nmap <cmd>t :tabnew<CR> "Create new tab"
+
+  " ctrl+mousewheel for tab switching
+  KeyMap nnoremap <C-ScrollWheelUp> :tabnext<CR> "ctrl+mousewheel for tab switching"
+  KeyMap nnoremap <C-ScrollWheelDown> :tabprevious<CR> "ctrl+mousewheel for tab switching"
+
+  KeyMap noremap <leader>x <cmd>bp\|bd#<CR> "Kill current buffer"
+
+  " run AnyJump on ctrl+click
+  KeyMap nnoremap <C-LeftMouse> :AnyJump<CR> "Run AnyJump on ctrl+click"
+KeyMapGroupEnd
+
+KeyMapGroup "Commenting"
+  KeyMap nmap <leader>c <Plug>CommentaryLine "Comment current line"
+  KeyMap vmap <leader>c <Plug>Commentary "Comment visualy selected text"
+KeyMapGroupEnd
+
+KeyMapGroup "FZF navigation"
+  KeyMap nmap <leader>b :Buffers<CR> "FZF Buffers"
+  KeyMap nmap <leader>q :Files<CR> "FZF Project files"
+KeyMapGroupEnd
+
+" eval current vimscrupt buffer
+KeyMapGroup <leader>e "Vim manipulations"
+  KeyMap nmap <leader>ev :Color <CR> "FZF Color themes"
+  KeyMap nmap <leader>ee :so %<CR> "(vimrc) Eval current file as vimscript"
+  KeyMap nmap <leader>ev :e ~/.vimrc <CR> "(vimrc) Open $MYVIMRC in current buffer"
+KeyMapGroupEnd
+
+KeyMapGroup <leader>g "Git Mappings"
+  KeyMap nmap <leader>gg :Git<CR> "Open Git"
+  KeyMap nmap <leader>gb :Git blame<CR> "Git blame for file"
+KeyMapGroupEnd
+
+KeyMapGroup "OSX clipboard"
+  KeyMap noremap <Leader>y "*y 'Copy to system clipboard'
+  KeyMap noremap <Leader>p "*p 'Paste from system clipboard'
+  KeyMap noremap <Leader>Y "+y 'Copy to editor clipboard'
+  KeyMap noremap <Leader>P "+p 'Paste from editor clipboard'
+KeyMapGroupEnd
+
+KeyMapGroup <leader>r "Tests runners"
+  KeyMap nmap <silent> <leader>rf :TestFile<CR> "Test file"
+  KeyMap nmap <silent> <leader>rd :TestFile -f d<CR> "Test file -f d"
+  KeyMap nmap <silent> <leader>rn :TestNearest<CR> "Test nearest"
+  KeyMap nmap <silent> <leader>rs :TestSuite<CR> "Test suite"
+  KeyMap nmap <silent> <leader>rl :TestLast<CR> "Test last"
+KeyMapGroupEnd
+
+" from: https://vim.fandom.com/wiki/Search_for_visually_selected_text
+KeyMap vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR> "Search visual selected text via //"
+
+" Show the quickfix window
+KeyMap nnoremap <Leader>co :copen<CR> "Show quickfix"
+
+" Hide the quickfix window
+KeyMap nnoremap <Leader>cc :cclose<CR> "Hide quickfix"
 ```
