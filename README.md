@@ -28,9 +28,26 @@ KeyMap nmap <silent> <leader>rf :TestFile<CR> "Run current test file"
 
 This command will be parsed and executed in according api env (vim or nvim).
 
+## Installation
+
+via vim-plug like tools:
+
+```viml
+Plug 'pechorin/u-keymapper.vim'
+```
+
+after this before any KeyMap's calls:
+
+```viml
+call u_keymapper#init()
+
+" now you can do your mappings with KeyMap command
+KeyMap nmap <silent> <leader>rf :TestFile<CR> "Run current test file"
+```
+
 ## Keygroups
 
-Keygroups usable not only for csv/table export, but also for which-key.nvim integration.
+Keygroups usable not only for csv/table export, but also for which-key.nvim integration and better config structure.
 
 ```viml
 KeyMapGroup <leader>r "Tests runners"
@@ -40,7 +57,15 @@ KeyMapGroup <leader>r "Tests runners"
    KeyMap nmap <silent> <leader>rs :TestSuite<CR> "Test suite"
    KeyMap nmap <silent> <leader>rl :TestLast<CR> "Test last"
 KeyMapGroupEnd
+
+KeyMapGroup "Navigation"
+  KeyMap nmap <leader>et :Tagbar<CR> "Tagbar"
+  KeyMap nmap <leader>n :NERDTree<CR> "NERDTree for project"
+  KeyMap nmap <leader>N :NERDTree %<CR> "NERDTree for current file"
+KeyMapGroupEnd
 ```
+
+After definitions keygroups with prefix (like `<leader>r`) will be registered in which-key.nvim.
 
 ## Export examples
 
@@ -152,19 +177,7 @@ This is my mapping from my [vim-files](https://github.com/pechorin/vim-files):
 ```viml
 call u_keymapper#init()
 
-" remap ; to :
-nmap ; :
-
-" set leader key for custom commands
 let mapleader=","
-
-" https://github.com/r00k/dotfiles/blob/master/vimrc
-" Disable that goddamn 'Entering Ex mode. Type 'visual' to go to Normal mode.'
-" that I trigger 40x a day.
-nmap Q <Nop>
-
-" Disable K looking man stuff up
-nmap K <Nop>
 
 KeyMapGroup "Bash-like keys for cmd"
   KeyMap cnoremap <C-A> <Home> "Bash-like CTRL+A for command line"
