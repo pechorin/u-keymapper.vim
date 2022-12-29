@@ -1,4 +1,4 @@
-# u-keymapper.vim — Universal keymapper for vim and neovim
+# u-keymapper.vim — universal keymapper for vim and neovim
 
 - Bind your **keybindings** to vim and nvim at the same time (with nvim additional features like keymap description)
 - Define **keygroups** for better configuration organization and integration with which-key.nvim
@@ -18,7 +18,7 @@ else
 endif
 ```
 
-Now with U-KeyMapper all you have to do is:
+Now with u-keymapper all you have to do is:
 
 ```viml
 " init mapping commands
