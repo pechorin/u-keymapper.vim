@@ -1,10 +1,10 @@
-# U-KeyMapper — Universal key mapper for vim and neovim
+# u-keymapper.vim — Universal keymapper for vim and neovim
 
 - Bind your **keybindings** to vim and nvim at the same time (with nvim additional features like keymap description)
 - Define **keygroups** for better configuration organization and integration with which-key.nvim
 - Export your custom keybindings to csv or table with vim-table-mode and share it with community friends
 
-## Key mappings before and after
+## Mappings before and after
 
 Let's imagine what you like me use your nvim for local development and classic vim 8 or 9 for remote machines setup. So maybe you will have something like what in your `.vimrc`:
 
@@ -21,14 +21,16 @@ endif
 Now with U-KeyMapper all you have to do is:
 
 ```viml
+" init mapping commands
 call u_keymapper#init()
 
+" map command
+" if vim: native `nmap`-like commands will be called
+" if neovim: nvim_set_keymap function will be called with additional nvim-only options
 KeyMap nmap <silent> <leader>rf :TestFile<CR> "Run current test file"
 ```
 
-This command will be parsed and executed in according api env (vim or nvim).
-
-## Installation
+## Installation and usage
 
 via vim-plug like tools:
 
@@ -36,20 +38,32 @@ via vim-plug like tools:
 Plug 'pechorin/u-keymapper.vim'
 ```
 
-after this before any KeyMap's calls:
+after this before any KeyMap call:
 
 ```viml
 call u_keymapper#init()
 
-" now you can do your mappings with KeyMap command
+" now define your mappings with KeyMap command
 KeyMap nmap <silent> <leader>rf :TestFile<CR> "Run current test file"
 ```
 
 ## Keygroups
 
-Keygroups usable not only for csv/table export, but also for which-key.nvim integration and better config structure.
+Define keymappings inside keygroups block, all mappings will have according group.
+
+This group used for:
+
+- exporting to csv/table
+- which-key.nvim key group name
+
+Example:
 
 ```viml
+" mapping without group
+KeyMap nnoremap <Leader>co :copen<CR> "Show quickfix"
+
+" `Test runners` keygroup will be assigned to all mappings inside KeyMapGroup
+" <leader>r is prefix for all commands in group
 KeyMapGroup <leader>r "Tests runners"
    KeyMap nmap <silent> <leader>rf :TestFile<CR> "Test file"
    KeyMap nmap <silent> <leader>rd :TestFile -f d<CR> "Test file -f d"
@@ -58,6 +72,7 @@ KeyMapGroup <leader>r "Tests runners"
    KeyMap nmap <silent> <leader>rl :TestLast<CR> "Test last"
 KeyMapGroupEnd
 
+" Group definition without command prefix
 KeyMapGroup "Navigation"
   KeyMap nmap <leader>et :Tagbar<CR> "Tagbar"
   KeyMap nmap <leader>n :NERDTree<CR> "NERDTree for project"
@@ -114,10 +129,6 @@ Execute `:KeyMapExportToTable` command in buffer and you will get result like th
 | v     | `//`                  | y/\V<C-R>=escape(@",'/\')<CR><CR> | Search visual selected text via //           |                        |
 | n     | `<Leader>co`          | :copen<CR>                        | Show quickfix                                |                        |
 | n     | `<Leader>cc`          | :cclose<CR>                       | Hide quickfix                                |                        |
-| n     | `gR`                  | <CMD>Glance references<CR>        | Glance reference                             |                        |
-| n     | `gD`                  | <CMD>Glance definitions<CR>       | Glance definitions                           |                        |
-| n     | `gY`                  | <CMD>Glance type_definitions<CR>  | Glance type definitions                      |                        |
-| n     | `gM`                  | <CMD>Glance implementations<CR>   | Glance implementations                       |                        |
 
 ### CSV example
 
@@ -164,15 +175,14 @@ n; `<leader>rl`; :TestLast<CR>; Test last; Tests runners
 v; `//`; y/\V<C-R>=escape(@",'/\')<CR><CR>; Search visual selected text via //;
 n; `<Leader>co`; :copen<CR>; Show quickfix;
 n; `<Leader>cc`; :cclose<CR>; Hide quickfix;
-n; `gR`; <CMD>Glance references<CR>; Glance reference;
-n; `gD`; <CMD>Glance definitions<CR>; Glance definitions;
-n; `gY`; <CMD>Glance type_definitions<CR>; Glance type definitions;
-n; `gM`; <CMD>Glance implementations<CR>; Glance implementations;
 ```
 
 ### Full .vimrc mapping example
 
 This is my mapping from my [vim-files](https://github.com/pechorin/vim-files):
+
+<details>
+  <summary><h2>full example</h2></summary>
 
 ```viml
 call u_keymapper#init()
@@ -195,21 +205,12 @@ KeyMapGroup "Navigation"
   KeyMap nmap <leader>n :NERDTree<CR> "NERDTree for project"
   KeyMap nmap <leader>N :NERDTree %<CR> "NERDTree for current file"
 
-  " Neotree
-  KeyMap nmap <leader>m :Neotree<CR> "Neotree"
-  KeyMap nmap <leader>M :Neotree %<CR> "Neotree for current file"
-  KeyMap nmap <leader>, :Neotree buffers<CR> "Neotree buffers"
-  KeyMap nmap <leader>. :Neotree float git_status<CR> "Neotree git"
-
   " Tabs
   KeyMap nmap <leader>t :tabnew<CR> "Create new tab"
-  KeyMap nmap <cmd>t :tabnew<CR> "Create new tab"
 
   " ctrl+mousewheel for tab switching
   KeyMap nnoremap <C-ScrollWheelUp> :tabnext<CR> "ctrl+mousewheel for tab switching"
   KeyMap nnoremap <C-ScrollWheelDown> :tabprevious<CR> "ctrl+mousewheel for tab switching"
-
-  KeyMap noremap <leader>x <cmd>bp\|bd#<CR> "Kill current buffer"
 
   " run AnyJump on ctrl+click
   KeyMap nnoremap <C-LeftMouse> :AnyJump<CR> "Run AnyJump on ctrl+click"
@@ -261,3 +262,4 @@ KeyMap nnoremap <Leader>co :copen<CR> "Show quickfix"
 " Hide the quickfix window
 KeyMap nnoremap <Leader>cc :cclose<CR> "Hide quickfix"
 ```
+</details>

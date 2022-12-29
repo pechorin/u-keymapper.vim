@@ -1,0 +1,108 @@
+*u_keymapper.txt* — Universal keymapper for vim and neovim
+
+- Bind your **keybindings** to vim and nvim at the same time (with nvim additional features like keymap description)
+- Define **keygroups** for better configuration organization and integration with which-key.nvim
+- Export your custom keybindings to csv or table with vim-table-mode and share it with community friends
+
+====================================================================
+CONTENTS                                      *u-keymapper-contents*
+
+    1. Mappings before and after ................ |any-jump-usage|
+
+====================================================================
+Section 1: Mappings before and after              *u-keymapper-idea*
+
+Let's imagine what you like me use your nvim for local development and classic vim 8 or 9 for remote machines setup. So maybe you will have something like what in your `.vimrc`:
+  >
+  let s:nvim  = has('nvim')
+
+  if s:nvim
+    call nvim_set_keymap('n', '<leader>rf', ':TestFile<CR>', {'silent': v:true, 'desc': 'Run current test file'})
+  else
+    nmap <silent> <leader>rf :TestFile<CR>
+  endif
+
+Now with U-KeyMapper all you have to do is:
+
+  >
+  " init mapping commands
+  call u_keymapper#init()
+
+  " map command
+  " if vim: native `nmap`-like commands will be called
+  " if neovim: nvim_set_keymap function will be called with additional nvim-only options
+  KeyMap nmap <silent> <leader>rf :TestFile<CR> "Run current test file"
+
+====================================================================
+Section 2: Installation and usage      *u-keymapper-install-and-use*
+
+
+via vim-plug like tools:
+  >
+  Plug 'pechorin/u-keymapper.vim'
+
+after this before any KeyMap call:
+
+  >
+  call u_keymapper#init()
+
+  " now define your mappings with KeyMap command
+  KeyMap nmap <silent> <leader>rf :TestFile<CR> "Run current test file"
+
+====================================================================
+Section 2: Keygroups                         *u-keymapper-keygroups*
+
+Define keymappings inside keygroups block, all mappings will have according group.
+
+This group used for:
+
+- exporting to csv/table
+- which-key.nvim key group name
+
+Example:
+
+  >
+  " mapping without group
+  KeyMap nnoremap <Leader>co :copen<CR> "Show quickfix"
+
+  " `Test runners` keygroup will be assigned to all mappings inside KeyMapGroup
+  " <leader>r is prefix for all commands in group
+  KeyMapGroup <leader>r "Tests runners"
+     KeyMap nmap <silent> <leader>rf :TestFile<CR> "Test file"
+     KeyMap nmap <silent> <leader>rd :TestFile -f d<CR> "Test file -f d"
+     KeyMap nmap <silent> <leader>rn :TestNearest<CR> "Test nearest"
+     KeyMap nmap <silent> <leader>rs :TestSuite<CR> "Test suite"
+     KeyMap nmap <silent> <leader>rl :TestLast<CR> "Test last"
+  KeyMapGroupEnd
+
+  " Group definition without command prefix
+  KeyMapGroup "Navigation"
+    KeyMap nmap <leader>et :Tagbar<CR> "Tagbar"
+    KeyMap nmap <leader>n :NERDTree<CR> "NERDTree for project"
+    KeyMap nmap <leader>N :NERDTree %<CR> "NERDTree for current file"
+  KeyMapGroupEnd
+
+After definitions keygroups with prefix (like `<leader>r`) will be registered in which-key.nvim.
+
+====================================================================
+Section 3: Commands                           *u-keymapper-commands*
+
+Export commands:
+
+`:KeyMapExportToCSV`   — export current keymappings to current buffer
+                         in csv format using `;` as separator
+
+`:KeyMapExportToTable` — export current keymappings to current buffer
+                         in table format using `which-key.nvim` plugin
+
+Mapping commands:
+
+`:KeyMap` — map keybinding
+`:KeyMapGroup` — start keygroup definition
+`:KeyMapGroupEnd` — nd keygroup definition
+
+====================================================================
+Section 4: Public api functions          *u-keymapper-api-functions*
+
+let csv = call u_keymapper#export({'write_to_buffer': v_false})
+echo "parsed csv: \n" .. csv
