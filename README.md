@@ -21,9 +21,6 @@ endif
 Now with u-keymapper all you have to do is:
 
 ```viml
-" init mapping commands
-call u_keymapper#init()
-
 " map command
 " if vim: native `nmap`-like commands will be called
 " if neovim: nvim_set_keymap function will be called with additional nvim-only options
@@ -263,3 +260,8 @@ KeyMap nnoremap <Leader>co :copen<CR> "Show quickfix"
 KeyMap nnoremap <Leader>cc :cclose<CR> "Hide quickfix"
 ```
 </details>
+
+### TODO
+
+- [ ] rewrite readme
+- [ ] alternative KeyMap command name via option?
